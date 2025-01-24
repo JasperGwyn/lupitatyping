@@ -83,6 +83,49 @@ class GameScene(Scene):
         # Cargar palabras del nivel actual
         self.palabras_disponibles = PALABRAS_POR_NIVEL[self.nivel]['palabras']
         
+        # Preparar a Lupita para el gameplay
+        self.wizard = resources.get_image('wizard')
+        if self.wizard:
+            wizard_height = 120  # Un poco más pequeña que en el menú
+            wizard_scale = wizard_height / self.wizard.get_height()
+            wizard_size = (int(self.wizard.get_width() * wizard_scale), wizard_height)
+            self.wizard = pygame.transform.scale(self.wizard, wizard_size)
+            self.wizard_pos = [SCREEN_WIDTH - wizard_size[0] - 20, SCREEN_HEIGHT - wizard_size[1] - 50]
+            self.wizard_float_offset = 0
+        
+        # Variables para la secuencia de Game Over
+        self.game_over = False
+        self.game_over_timer = 0
+        self.game_over_duration = 3000  # 3 segundos
+        self.game_over_text = self.fuente.render("¡GAME OVER!", True, COLORS['ROJO'])
+        self.game_over_alpha = 0
+        
+        # Preparar árboles
+        self.trees = []
+        tree_img = resources.get_image('tree1')
+        if tree_img:
+            tree_height = 200
+            tree_scale = tree_height / tree_img.get_height()
+            tree_size = (int(tree_img.get_width() * tree_scale), tree_height)
+            tree_scaled = pygame.transform.scale(tree_img, tree_size)
+            # Árbol a 5% desde la izquierda
+            self.trees.append({
+                'surface': tree_scaled,
+                'pos': (int(SCREEN_WIDTH * 0.05), self.area_juego_height - tree_size[1])
+            })
+        
+        tree_img = resources.get_image('tree2')
+        if tree_img:
+            tree_height = 200
+            tree_scale = tree_height / tree_img.get_height()
+            tree_size = (int(tree_img.get_width() * tree_scale), tree_height)
+            tree_scaled = pygame.transform.scale(tree_img, tree_size)
+            # Árbol a 20% desde la derecha
+            self.trees.append({
+                'surface': tree_scaled,
+                'pos': (int(SCREEN_WIDTH * 0.8), self.area_juego_height - tree_size[1])
+            })
+        
     def cargar_musica_nivel(self, nivel):
         """Carga la música correspondiente al nivel actual"""
         # Lista de posibles extensiones a probar
@@ -159,12 +202,15 @@ class GameScene(Scene):
     def perder_vida(self, palabra):
         """Maneja la pérdida de una vida"""
         self.vidas -= 1
-        # Reproducir sonido de explosión
         self.sonido_explosion.play()
         # Crear animación de explosión
         self.animaciones.append(ExplosionAnimation(palabra.x, palabra.y, palabra.texto))
-        if self.vidas <= 0:
-            self.game.change_scene("results")
+        
+        if self.vidas <= 0 and not self.game_over:
+            self.game_over = True
+            self.game_over_timer = pygame.time.get_ticks()
+            # La transición a la escena de resultados se manejará en el update
+            # cuando termine la animación de Game Over
         
     def dibujar_teclado(self, screen):
         """Dibuja una representación simple del teclado con colores por dedo"""
@@ -280,6 +326,16 @@ class GameScene(Scene):
     def update(self):
         tiempo_actual = pygame.time.get_ticks()
         
+        # Si estamos en Game Over, manejar la transición
+        if self.game_over:
+            tiempo_transcurrido = tiempo_actual - self.game_over_timer
+            if tiempo_transcurrido < self.game_over_duration:
+                # Aumentar la opacidad gradualmente
+                self.game_over_alpha = min(255, int((tiempo_transcurrido / 1000) * 255))
+            else:
+                self.game.change_scene("results")
+                return
+        
         # Actualizar nubes
         for cloud in self.clouds:
             cloud['pos'][0] += cloud['speed']
@@ -314,6 +370,11 @@ class GameScene(Scene):
             self.spawn_palabra()
             self.tiempo_ultimo_spawn = tiempo_actual
             
+        # Animar flotación de Lupita
+        if hasattr(self, 'wizard_float_offset'):
+            self.wizard_float_offset = (self.wizard_float_offset + 2) % 360
+            self.wizard_pos[1] = SCREEN_HEIGHT - self.wizard.get_height() - 50 + math.sin(math.radians(self.wizard_float_offset)) * 10
+        
     def draw(self, screen):
         # Dibujar fondo
         screen.fill((100, 149, 237))  # Azul real más oscuro para el cielo
@@ -321,6 +382,10 @@ class GameScene(Scene):
         # Dibujar nubes
         for cloud in self.clouds:
             screen.blit(cloud['surface'], cloud['pos'])
+        
+        # Dibujar árboles de fondo
+        for tree in self.trees:
+            screen.blit(tree['surface'], tree['pos'])
         
         # Dibujar castillo
         if hasattr(self, 'castle'):
@@ -344,11 +409,30 @@ class GameScene(Scene):
         for animacion in self.animaciones:
             animacion.draw(screen)
             
+        # Dibujar el teclado
+        self.dibujar_teclado(screen)
+        
+        # Dibujar a Lupita
+        if hasattr(self, 'wizard'):
+            screen.blit(self.wizard, self.wizard_pos)
+            
         # Dibujar interfaz
         self.dibujar_interfaz(screen)
         
-        # Dibujar el teclado
-        self.dibujar_teclado(screen)
+        # Si estamos en Game Over, dibujar el texto
+        if self.game_over:
+            # Crear una copia del texto con la opacidad actual
+            texto_con_alpha = self.game_over_text.copy()
+            texto_con_alpha.set_alpha(self.game_over_alpha)
+            
+            # Agregar un resplandor rojo
+            glow = pygame.Surface((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.SRCALPHA)
+            glow.fill((255, 0, 0, min(100, self.game_over_alpha // 2)))
+            screen.blit(glow, (0, 0))
+            
+            # Centrar y dibujar el texto
+            texto_rect = texto_con_alpha.get_rect(center=(SCREEN_WIDTH//2, SCREEN_HEIGHT//2))
+            screen.blit(texto_con_alpha, texto_rect)
         
     def dibujar_interfaz(self, screen):
         # Dibujar texto del usuario

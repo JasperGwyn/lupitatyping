@@ -12,8 +12,15 @@ class Word:
         self.area_limite = 0
         self.fuente = pygame.font.Font(None, 36)
         
-        # Preparar la superficie de renderizado
-        self.surface = self.fuente.render(self.texto, True, COLORS['BLANCO'])
+        # Asignar colores a cada letra según el dedo que debe usarla
+        self.colores_letras = []
+        for letra in texto:
+            color = COLORS['BLANCO']  # Color por defecto
+            for dedo, teclas in TECLAS_POR_DEDO.items():
+                if letra.upper() in teclas:
+                    color = COLORS[dedo]
+                    break
+            self.colores_letras.append(color)
         
     def update(self):
         """Actualiza la posición de la palabra"""
@@ -21,14 +28,20 @@ class Word:
             self.y += self.velocidad
             
             # Verificar si ha tocado la línea límite
-            altura_texto = self.surface.get_height()
+            altura_texto = self.fuente.size(self.texto)[1]
             if self.y + altura_texto >= self.area_limite:
                 self.explotada = True
         
     def draw(self, screen):
         """Dibuja la palabra en la pantalla"""
         if not self.explotada and not self.acertada:  # Solo dibujar si no está explotada ni acertada
-            screen.blit(self.surface, (self.x, self.y))
+            # Dibujar cada letra con su color correspondiente
+            x_offset = self.x
+            for i, letra in enumerate(self.texto):
+                letra_surface = self.fuente.render(letra, True, self.colores_letras[i])
+                screen.blit(letra_surface, (x_offset, self.y))
+                # Aumentamos el offset según el ancho de la letra
+                x_offset += self.fuente.size(letra)[0]
             
     def check_match(self, texto_usuario):
         """Verifica si el texto ingresado coincide con esta palabra"""

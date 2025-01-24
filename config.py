@@ -21,36 +21,31 @@ for nivel in range(1, 6):  # 5 niveles
         'palabras_para_pasar': 5 + (nivel - 1) * 3
     }
 
-# Colores
+# Colores del juego
 COLORS = {
     'NEGRO': (0, 0, 0),
     'BLANCO': (255, 255, 255),
-    'ROJO': (255, 0, 0),
-    'VERDE': (0, 255, 0),
-    'AZUL': (0, 0, 255),
-    'AMARILLO': (255, 255, 0),
-    'CELESTE': (0, 191, 255),
-    'AZUL_CIELO': (135, 206, 235),  # Agregado para el fondo
-    'MEÑIQUE_IZQ': (255, 100, 100),
-    'ANULAR_IZQ': (100, 255, 100),
-    'MEDIO_IZQ': (100, 100, 255),
-    'INDICE_IZQ': (255, 255, 100),
-    'INDICE_DER': (255, 100, 255),
-    'MEDIO_DER': (100, 255, 255),
-    'ANULAR_DER': (255, 200, 100),
-    'MEÑIQUE_DER': (200, 100, 255)
+    'ROJO': (255, 50, 50),         # Meñique izquierdo
+    'VERDE': (50, 255, 100),       # Anular izquierdo
+    'AZUL': (200, 250, 150),        # Medio izquierdo
+    'MORADO': (200, 50, 255),      # Índice izquierdo
+    'ROSA': (255, 100, 150),       # Índice derecho
+    'CYAN': (50, 200, 255),        # Medio derecho
+    'NARANJA': (255, 150, 50),     # Anular derecho
+    'MAGENTA': (255, 50, 255),     # Meñique derecho
+    'AZUL_CIELO': (135, 206, 235)  # Para el fondo
 }
 
-# Configuración de teclas por dedo
+# Teclas asignadas a cada dedo
 TECLAS_POR_DEDO = {
-    'MEÑIQUE_IZQ': ['Q', 'A', 'Z'],
-    'ANULAR_IZQ': ['W', 'S', 'X'],
-    'MEDIO_IZQ': ['E', 'D', 'C'],
-    'INDICE_IZQ': ['R', 'F', 'V', 'T', 'G', 'B'],
-    'INDICE_DER': ['Y', 'H', 'N', 'U', 'J', 'M'],
-    'MEDIO_DER': ['I', 'K'],
-    'ANULAR_DER': ['O', 'L'],
-    'MEÑIQUE_DER': ['P', 'Ñ']
+    'ROJO': {'Q', 'A', 'Z'},           # Meñique izquierdo
+    'VERDE': {'W', 'S', 'X'},          # Anular izquierdo
+    'AZUL': {'E', 'D', 'C'},           # Medio izquierdo
+    'MORADO': {'R', 'F', 'V', 'T', 'G', 'B'},         # Índice izquierdo
+    'ROSA': {'Y', 'H', 'N', 'U', 'J', 'M'},           # Índice derecho
+    'CYAN': {'I', 'K'},           # Medio derecho
+    'NARANJA': {'O', 'L'},        # Anular derecho
+    'MAGENTA': {'P', 'Ñ'}  # Meñique derecho
 }
 
 # Palabras organizadas por nivel y posición de dedos

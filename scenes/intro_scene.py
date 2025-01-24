@@ -15,35 +15,8 @@ class IntroScene(Scene):
         # Cargar recursos
         resources.load_all_resources()
         
-        # Preparar el castillo
-        self.castle = resources.get_image('castle')
-        if self.castle:
-            castle_height = SCREEN_HEIGHT // 2
-            castle_scale = castle_height / self.castle.get_height()
-            castle_size = (int(self.castle.get_width() * castle_scale), castle_height)
-            self.castle = pygame.transform.scale(self.castle, castle_size)
-            self.castle_pos = (SCREEN_WIDTH - castle_size[0] - 50, SCREEN_HEIGHT - castle_size[1] - 100)
-        
-        # Preparar el sol
-        self.sun = resources.get_image('sun')
-        if self.sun:
-            sun_size = (100, 100)
-            self.sun = pygame.transform.scale(self.sun, sun_size)
-            self.sun_pos = [50, 50]  # Lista para poder animarlo
-            self.sun_angle = 0
-        
-        # Preparar las nubes
-        self.clouds = []
-        cloud = resources.get_image('cloud1')
-        if cloud:
-            for _ in range(5):  # Más nubes
-                cloud_size = (random.randint(150, 250), random.randint(75, 125))  # Tamaños más variados
-                cloud_scaled = pygame.transform.scale(cloud, cloud_size)
-                self.clouds.append({
-                    'surface': cloud_scaled,
-                    'pos': [SCREEN_WIDTH + random.randint(0, 500), random.randint(30, 200)],
-                    'speed': random.uniform(0.3, 1.0)
-                })
+        # Inicializar fondo común
+        self.init_background()
         
         # Preparar a Lupita
         self.wizard = resources.get_image('wizard')
@@ -92,21 +65,12 @@ class IntroScene(Scene):
             pygame.mixer.music.play(-1)  # -1 para reproducción en loop
         except:
             print("No se pudo cargar la música de intro")
-        
+    
     def update(self):
         tiempo_actual = pygame.time.get_ticks()
         
-        # Animar el sol
-        if hasattr(self, 'sun_angle'):
-            self.sun_angle = (self.sun_angle + 0.5) % 360
-            self.sun_pos[1] = 50 + math.sin(math.radians(self.sun_angle)) * 10
-        
-        # Animar las nubes
-        for cloud in self.clouds:
-            cloud['pos'][0] -= cloud['speed']
-            if cloud['pos'][0] + cloud['surface'].get_width() < -200:
-                cloud['pos'][0] = SCREEN_WIDTH + random.randint(100, 300)
-                cloud['pos'][1] = random.randint(30, 200)
+        # Actualizar fondo común
+        self.update_background()
         
         # Animar partículas
         for p in self.particles:
@@ -162,29 +126,14 @@ class IntroScene(Scene):
                 self.text_alpha = 0
     
     def draw(self, screen):
-        # Dibujar fondo
-        screen.fill((135, 206, 235))  # Cielo azul claro
+        # Dibujar fondo común
+        self.draw_background(screen)
         
-        # Dibujar sol con brillo
-        if hasattr(self, 'sun'):
-            # Brillo del sol
-            glow = pygame.Surface((150, 150), pygame.SRCALPHA)
-            pygame.draw.circle(glow, (255, 255, 200, 64), (75, 75), 60)
-            screen.blit(glow, (self.sun_pos[0] - 25, self.sun_pos[1] - 25))
-            screen.blit(self.sun, self.sun_pos)
-        
-        # Dibujar nubes
-        for cloud in self.clouds:
-            screen.blit(cloud['surface'], cloud['pos'])
-        
-        # Dibujar castillo
-        if hasattr(self, 'castle'):
-            screen.blit(self.castle, self.castle_pos)
-        
-        # Dibujar partículas mágicas
+        # Dibujar partículas
         for p in self.particles:
-            surf = pygame.Surface((p['size'], p['size']), pygame.SRCALPHA)
-            pygame.draw.circle(surf, (255, 255, 255, p['alpha']), (p['size']//2, p['size']//2), p['size']//2)
+            surf = pygame.Surface((p['size'], p['size']))
+            surf.fill(COLORS['BLANCO'])
+            surf.set_alpha(p['alpha'])
             screen.blit(surf, p['pos'])
         
         # Dibujar a Lupita

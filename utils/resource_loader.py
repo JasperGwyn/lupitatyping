@@ -24,14 +24,20 @@ def clear_resources():
     _images.clear()
 
 def load_all_resources():
-    """Carga todos los recursos necesarios"""
-    # Cargar fondos
-    load_image('castle', 'backgrounds/castle.png')
-    load_image('cloud1', 'backgrounds/cloud1.png')
-    load_image('sun', 'backgrounds/sun.png')
-    
+    """Carga todos los recursos necesarios para el juego"""
     # Cargar personajes
     load_image('wizard', 'characters/wizard.png')
+    
+    # Cargar elementos de fondo
+    load_image('castle', 'backgrounds/castle.png')
+    load_image('sun', 'backgrounds/sun.png')
+    load_image('cloud1', 'backgrounds/cloud1.png')
+    load_image('tree1', 'backgrounds/tree1.png')
+    load_image('tree2', 'backgrounds/tree2.png')
+    load_image('grass1', 'backgrounds/grass1.png')
+    load_image('grass2', 'backgrounds/grass2.png')
+    load_image('grass3', 'backgrounds/grass3.png')
+    load_image('fence', 'backgrounds/fence.png')
     
     # Cargar UI
     load_image('heart', 'ui/heart.png')  # Nuevo corazón pixel art 
