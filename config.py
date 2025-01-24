@@ -1,5 +1,5 @@
 # Configuración general
-GAME_TITLE = "Lupita's Typing Adventure"
+GAME_TITLE = "LA AVENTURA MÁGICA DE LUPITA"
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 FPS = 60
@@ -23,21 +23,22 @@ for nivel in range(1, 6):  # 5 niveles
 
 # Colores
 COLORS = {
-    'ROSA': (255, 192, 203),
-    'AZUL': (100, 149, 237),
-    'VERDE': (144, 238, 144),
     'NEGRO': (0, 0, 0),
     'BLANCO': (255, 255, 255),
     'ROJO': (255, 0, 0),
-    # Colores para cada dedo
-    'MEÑIQUE_IZQ': (255, 100, 100),  # Rojo suave
-    'ANULAR_IZQ': (255, 180, 100),   # Naranja
-    'MEDIO_IZQ': (150, 220, 150),    # Verde suave
-    'INDICE_IZQ': (180, 255, 100),   # Verde claro
-    'INDICE_DER': (100, 255, 180),   # Verde agua
-    'MEDIO_DER': (100, 255, 255),    # Celeste
-    'ANULAR_DER': (100, 180, 255),   # Azul claro
-    'MEÑIQUE_DER': (180, 100, 255)   # Violeta
+    'VERDE': (0, 255, 0),
+    'AZUL': (0, 0, 255),
+    'AMARILLO': (255, 255, 0),
+    'CELESTE': (0, 191, 255),
+    'AZUL_CIELO': (135, 206, 235),  # Agregado para el fondo
+    'MEÑIQUE_IZQ': (255, 100, 100),
+    'ANULAR_IZQ': (100, 255, 100),
+    'MEDIO_IZQ': (100, 100, 255),
+    'INDICE_IZQ': (255, 255, 100),
+    'INDICE_DER': (255, 100, 255),
+    'MEDIO_DER': (100, 255, 255),
+    'ANULAR_DER': (255, 200, 100),
+    'MEÑIQUE_DER': (200, 100, 255)
 }
 
 # Configuración de teclas por dedo
@@ -56,23 +57,23 @@ TECLAS_POR_DEDO = {
 PALABRAS_POR_NIVEL = {
     1: {  # Nivel 1: Dedos índices (posición base)
         'palabras': ['MAMA', 'NENE', 'NANA'],
-        'descripcion': 'Posición base - Dedos índices (F y J)'
+        'descripcion': 'POSICIÓN BASE - DEDOS ÍNDICES (F Y J)'
     },
     2: {  # Nivel 2: Dedos medios
         'palabras': ['DEDO', 'KILO', 'DIKE'],
-        'descripcion': 'Dedos medios (D y K)'
+        'descripcion': 'DEDOS MEDIOS (D Y K)'
     },
     3: {  # Nivel 3: Dedos anulares
         'palabras': ['SOL', 'LOS', 'SAL'],
-        'descripcion': 'Dedos anulares (S y L)'
+        'descripcion': 'DEDOS ANULARES (S Y L)'
     },
     4: {  # Nivel 4: Dedos meñiques
         'palabras': ['PAZ', 'AÑO', 'QUE'],
-        'descripcion': 'Dedos meñiques (Q y P)'
+        'descripcion': 'DEDOS MEÑIQUES (Q Y P)'
     },
     5: {  # Nivel 5: Combinaciones
         'palabras': ['CASA', 'MESA', 'PATO', 'LUNA'],
-        'descripcion': 'Combinando todos los dedos'
+        'descripcion': 'COMBINANDO TODOS LOS DEDOS'
     }
 }
 

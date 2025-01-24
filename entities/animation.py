@@ -50,7 +50,7 @@ class ExplosionAnimation:
     def __init__(self, x, y, texto):
         self.particulas = []
         self.tiempo_inicio = pygame.time.get_ticks()
-        self.activa = True
+        self.terminada = False
         
         # Crear partículas de la explosión
         for _ in range(20):  # 20 partículas por explosión
@@ -75,7 +75,7 @@ class ExplosionAnimation:
         tiempo_transcurrido = tiempo_actual - self.tiempo_inicio
         
         if tiempo_transcurrido > GAME_CONFIG['TIEMPO_ANIMACION']:
-            self.activa = False
+            self.terminada = True
             return
             
         # Actualizar cada partícula
@@ -86,7 +86,7 @@ class ExplosionAnimation:
             p['alpha'] = max(0, 255 * (1 - tiempo_transcurrido/GAME_CONFIG['TIEMPO_ANIMACION']))
             
     def draw(self, screen):
-        if not self.activa:
+        if self.terminada:
             return
             
         for p in self.particulas:

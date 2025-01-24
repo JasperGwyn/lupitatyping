@@ -1,8 +1,10 @@
 import pygame
 from config import *
-from scenes.menu import MenuScene
+from scenes.menu_scene import MenuScene
 from scenes.game_scene import GameScene
 from scenes.results_scene import ResultsScene
+from scenes.intro_scene import IntroScene
+from scenes.instructions_scene import InstructionsScene
 
 class Game:
     def __init__(self):
@@ -16,17 +18,22 @@ class Game:
         self.running = True
         self.current_scene = None
         
+        self.change_scene("intro")
+        
     def change_scene(self, scene_name):
-        if scene_name == "menu":
+        if scene_name == "intro":
+            self.current_scene = IntroScene(self)
+        elif scene_name == "menu":
             self.current_scene = MenuScene(self)
         elif scene_name == "game":
+            pygame.mixer.music.stop()
             self.current_scene = GameScene(self)
+        elif scene_name == "instructions":
+            self.current_scene = InstructionsScene(self)
         elif scene_name == "results":
             self.current_scene = ResultsScene(self)
     
     def run(self):
-        self.change_scene("menu")
-        
         while self.running:
             self.clock.tick(FPS)
             
