@@ -24,7 +24,7 @@ class InstructionsScene(Scene):
             wizard_scale = wizard_height / self.wizard.get_height()
             wizard_size = (int(self.wizard.get_width() * wizard_scale), wizard_height)
             self.wizard = pygame.transform.scale(self.wizard, wizard_size)
-            self.wizard_pos = [SCREEN_WIDTH//2 - wizard_size[0]//2, SCREEN_HEIGHT - wizard_size[1] - 150]
+            self.wizard_pos = [SCREEN_WIDTH//2 - wizard_size[0]//2, SCREEN_HEIGHT//2 - wizard_size[1]//2]
             self.wizard_float_offset = 0
         
         # Partículas mágicas
@@ -67,7 +67,7 @@ class InstructionsScene(Scene):
         # Animar a Lupita
         if hasattr(self, 'wizard_float_offset'):
             self.wizard_float_offset = (self.wizard_float_offset + 2) % 360
-            self.wizard_pos[1] = SCREEN_HEIGHT - self.wizard.get_height() - 150 + math.sin(math.radians(self.wizard_float_offset)) * 15
+            self.wizard_pos[1] = SCREEN_HEIGHT//2 - self.wizard.get_height()//2 + math.sin(math.radians(self.wizard_float_offset)) * 15
     
     def handle_event(self, event):
         if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:

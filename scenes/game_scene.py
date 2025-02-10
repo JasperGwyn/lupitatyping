@@ -125,6 +125,10 @@ class GameScene(Scene):
                 'surface': tree_scaled,
                 'pos': (int(SCREEN_WIDTH * 0.8), self.area_juego_height - tree_size[1])
             })
+            
+        # Generar la primera palabra inmediatamente al iniciar el nivel
+        self.spawn_palabra()
+        self.tiempo_ultimo_spawn = pygame.time.get_ticks()
         
     def cargar_musica_nivel(self, nivel):
         """Carga la música correspondiente al nivel actual"""
@@ -310,6 +314,10 @@ class GameScene(Scene):
                         self.multiplicador_velocidad *= INCREMENTO_VELOCIDAD
                         self.multiplicador_frecuencia *= INCREMENTO_FRECUENCIA
                         self.check_nivel_completo()
+                        # Generar nueva palabra inmediatamente
+                        self.spawn_palabra()
+                        # Actualizar el tiempo del último spawn para mantener el ritmo
+                        self.tiempo_ultimo_spawn = pygame.time.get_ticks()
                         break
                 
                 if not palabra_acertada and self.texto_usuario:  # Solo reproducir error si escribió algo

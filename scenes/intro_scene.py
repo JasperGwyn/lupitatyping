@@ -26,11 +26,12 @@ class IntroScene(Scene):
             wizard_size = (int(self.wizard.get_width() * wizard_scale), wizard_height)
             self.wizard = pygame.transform.scale(self.wizard, wizard_size)
             # Posicionar a Lupita - Empezamos desde la izquierda
-            self.wizard_pos = [-wizard_size[0], SCREEN_HEIGHT - wizard_size[1] - 150]
+            self.wizard_pos = [-wizard_size[0], SCREEN_HEIGHT//2 - wizard_size[1]//2]
+            
             # Posición final en el centro
             self.wizard_target_x = SCREEN_WIDTH//2 - wizard_size[0]//2
-            self.wizard_float_offset = 0
-        
+            self.wizard_float_offset = 0 
+            
         # Partículas mágicas
         self.particles = []
         for _ in range(30):
@@ -88,9 +89,9 @@ class IntroScene(Scene):
             if self.wizard_pos[0] < self.wizard_target_x:
                 self.wizard_pos[0] += 5
             
-            # Flotación suave
+            # Flotación suave alrededor del centro
             self.wizard_float_offset = (self.wizard_float_offset + 2) % 360
-            self.wizard_pos[1] = SCREEN_HEIGHT - self.wizard.get_height() - 150 + math.sin(math.radians(self.wizard_float_offset)) * 15
+            self.wizard_pos[1] = SCREEN_HEIGHT//2 - self.wizard.get_height()//2 + math.sin(math.radians(self.wizard_float_offset)) * 15
         
         # Manejar las transiciones
         if self.animation_state == "FADE_IN" and self.first_fade:
