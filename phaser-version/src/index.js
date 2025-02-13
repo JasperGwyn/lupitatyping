@@ -15,7 +15,7 @@ const config = {
     type: Phaser.AUTO,
     width: SCREEN_CONFIG.WIDTH,
     height: SCREEN_CONFIG.HEIGHT,
-    pixelArt: true,  // Esto asegura que no se aplique suavizado a los píxeles
+    pixelArt: true,
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH
@@ -24,7 +24,7 @@ const config = {
         default: 'arcade',
         arcade: {
             gravity: { y: 0 },
-            debug: false
+            debug: process.env.NODE_ENV === 'development'
         }
     },
     render: {
@@ -34,6 +34,26 @@ const config = {
     },
     scene: [IntroScene, MenuScene, GameScene, InstructionsScene, ResultsScene]
 };
+
+// Si hay una escena inicial especificada en las variables de entorno, usarla
+if (process.env.START_SCENE) {
+    const sceneMap = {
+        'intro': IntroScene,
+        'menu': MenuScene,
+        'game': GameScene,
+        'instructions': InstructionsScene,
+        'results': ResultsScene
+    };
+    
+    // Reorganizar las escenas para poner la escena inicial primero
+    const startScene = sceneMap[process.env.START_SCENE];
+    if (startScene) {
+        config.scene = [
+            startScene,
+            ...Object.values(sceneMap).filter(scene => scene !== startScene)
+        ];
+    }
+}
 
 // Crear instancia de Phaser
 new Phaser.Game(config); 

@@ -37,13 +37,23 @@ export default class IntroScene extends BaseScene {
             .setScale(10)
             .setOrigin(0.5);
 
-        // Crear el texto actual (inicialmente vacío) - Ahora más arriba y con fuente más pequeña
-        this.currentText = this.add.text(SCREEN_CONFIG.WIDTH / 2, SCREEN_CONFIG.HEIGHT / 6, '', {
+        // Crear el texto actual con sombra
+        const textY = 82; // Misma posición Y que el menú
+        this.currentText = this.add.text(SCREEN_CONFIG.WIDTH / 2 + 2, textY, '', {
+            fontFamily: '"Press Start 2P"',
+            fontSize: '24px',
+            color: '#000000', // Sombra
+            align: 'center',
+            wordWrap: { width: SCREEN_CONFIG.WIDTH - 100 }
+        }).setOrigin(0.5).setAlpha(0);
+
+        // Texto principal
+        this.currentTextMain = this.add.text(SCREEN_CONFIG.WIDTH / 2, textY - 2, '', {
             fontFamily: '"Press Start 2P"',
             fontSize: '24px',
             color: '#ffffff',
             align: 'center',
-            wordWrap: { width: SCREEN_CONFIG.WIDTH - 100 } // Evitar que el texto se salga de la pantalla
+            wordWrap: { width: SCREEN_CONFIG.WIDTH - 100 }
         }).setOrigin(0.5).setAlpha(0);
 
         // Texto de "Presiona ESPACIO"
@@ -96,47 +106,29 @@ export default class IntroScene extends BaseScene {
 
         this.animationState = "SHOW_TEXT";
         this.currentText.setText(this.storyTexts[this.currentPage]);
+        this.currentTextMain.setText(this.storyTexts[this.currentPage]);
         
-        // Fade in del texto
-        this.tweens.add({
-            targets: this.currentText,
-            alpha: 1,
-            duration: 500,
-            onComplete: () => {
-                this.animationState = "WAIT";
-                // Mostrar y animar el texto de "Presiona ESPACIO"
-                this.tweens.add({
-                    targets: this.pressSpaceText,
-                    alpha: { from: 0, to: 1 },
-                    duration: 500,
-                    yoyo: true,
-                    repeat: -1
-                });
-            }
-        });
+        // Mostrar textos inmediatamente
+        this.currentText.setAlpha(1);
+        this.currentTextMain.setAlpha(1);
+        this.animationState = "WAIT";
     }
 
     nextText() {
-        // Fade out del texto actual
-        this.tweens.add({
-            targets: [this.currentText, this.pressSpaceText],
-            alpha: 0,
-            duration: 500,
-            onComplete: () => {
-                this.currentPage++;
-                this.showCurrentText();
-            }
-        });
+        // Quitamos el texto inmediatamente
+        this.currentText.setAlpha(0);
+        this.currentTextMain.setAlpha(0);
+        this.currentPage++;
+        this.showCurrentText();
     }
 
     finishIntro() {
-        // Detener la música antes de cambiar de escena
-        if (this.music) {
-            this.music.stop();
-        }
-        this.cameras.main.fadeOut(1000, 0, 0, 0);
-        this.time.delayedCall(1000, () => {
-            this.game.changeScene(this, 'menu');
-        });
+        // Quitamos los textos inmediatamente
+        this.currentText.setAlpha(0);
+        this.currentTextMain.setAlpha(0);
+        this.pressSpaceText.setAlpha(0);
+        
+        // Iniciamos la escena del menú manteniendo esta activa
+        this.scene.launch('menu');
     }
 } 

@@ -38,9 +38,10 @@ export default class BaseScene extends Phaser.Scene {
         this.add.rectangle(0, 0, this.cameras.main.width, this.cameras.main.height, 0x87CEEB)
             .setOrigin(0);
 
-        // Sol con animación
+        // Sol - mantenemos proporción 1:1 para el sol
+        const sunSize = 100;
         this.sun = this.add.image(50, 50, 'sun')
-            .setDisplaySize(100, 100);
+            .setDisplaySize(sunSize, sunSize);
         
         // Animación del sol
         this.tweens.add({
@@ -52,56 +53,69 @@ export default class BaseScene extends Phaser.Scene {
             ease: 'Sine.InOut'
         });
 
-        // Nubes
+        // Nubes con proporciones originales
         this.clouds = [];
         for (let i = 0; i < 5; i++) {
-            const width = Phaser.Math.Between(150, 250);
-            const height = Phaser.Math.Between(75, 125);
+            const baseWidth = 200;
             const cloud = this.add.image(
                 Phaser.Math.Between(0, this.cameras.main.width),
                 Phaser.Math.Between(30, 200),
                 'cloud1'
-            ).setDisplaySize(width, height);
+            );
+            
+            // Mantener proporción original
+            const scale = baseWidth / cloud.width;
+            cloud.setScale(scale);
             
             cloud.speed = Phaser.Math.FloatBetween(0.3, 1.0);
             this.clouds.push(cloud);
         }
 
-        // Castillo (mitad de la altura de la pantalla)
-        const castleHeight = this.cameras.main.height / 2;
+        // Castillo con proporción original
+        const castleTargetHeight = this.cameras.main.height / 2;
         this.castle = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'castle')
-            .setOrigin(0.5, 1)
-            .setDisplaySize(castleHeight * 1.5, castleHeight); // Mantener proporción aproximada
+            .setOrigin(0.5, 1);
+        const castleScale = castleTargetHeight / this.castle.height;
+        this.castle.setScale(castleScale);
 
-        // Árboles
-        const treeHeight = 200;
-        this.add.image(this.cameras.main.width * 0.05, this.cameras.main.height, 'tree1')
-            .setOrigin(0, 1)
-            .setDisplaySize(treeHeight * 0.75, treeHeight);
+        // Árboles con proporción original
+        const treeTargetHeight = 200;
+        const tree1 = this.add.image(this.cameras.main.width * 0.05, this.cameras.main.height, 'tree1')
+            .setOrigin(0, 1);
+        const tree1Scale = treeTargetHeight / tree1.height;
+        tree1.setScale(tree1Scale);
         
-        this.add.image(this.cameras.main.width * 0.8, this.cameras.main.height, 'tree2')
-            .setOrigin(0, 1)
-            .setDisplaySize(treeHeight * 0.75, treeHeight);
+        const tree2 = this.add.image(this.cameras.main.width * 0.8, this.cameras.main.height, 'tree2')
+            .setOrigin(0, 1);
+        const tree2Scale = treeTargetHeight / tree2.height;
+        tree2.setScale(tree2Scale);
 
-        // Cerca
-        const fenceHeight = 45;
-        const fenceWidth = fenceHeight * 0.8;
-        const fenceSpacing = fenceWidth - 5; // Espacio entre cercas con superposición
-        const numFences = Math.ceil(this.cameras.main.width / fenceSpacing) + 1; // +1 para asegurar cobertura completa
+        // Cerca con proporción original
+        const fenceTargetHeight = 45;
+        // Crear una cerca temporal fuera de la pantalla
+        const tempFence = this.add.image(-1000, -1000, 'fence');
+        const fenceScale = fenceTargetHeight / tempFence.height;
+        const fenceWidth = tempFence.width * fenceScale;
+        const fenceSpacing = fenceWidth - 5;
+        const numFences = Math.ceil(this.cameras.main.width / fenceSpacing) + 1;
+        // Destruir la cerca temporal
+        tempFence.destroy();
         
         for (let i = 0; i < numFences; i++) {
             this.add.image(i * fenceSpacing, this.cameras.main.height, 'fence')
                 .setOrigin(0, 1)
-                .setDisplaySize(fenceWidth, fenceHeight);
+                .setScale(fenceScale);
         }
 
-        // Pasto
+        // Pasto con proporción original
+        const grassTargetHeight = 12;
         for (let i = 0; i < 10; i++) {
             const grassType = `grass${Phaser.Math.Between(1, 3)}`;
             const xPos = i * (this.cameras.main.width / 10) + Phaser.Math.Between(-20, 20);
-            this.add.image(xPos, this.cameras.main.height, grassType)
-                .setOrigin(0, 1)
-                .setDisplaySize(25, 12);
+            const grass = this.add.image(xPos, this.cameras.main.height, grassType)
+                .setOrigin(0, 1);
+            const grassScale = grassTargetHeight / grass.height;
+            grass.setScale(grassScale);
         }
 
         // Evento de update para las nubes

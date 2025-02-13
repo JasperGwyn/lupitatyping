@@ -1,5 +1,6 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
     entry: './src/index.js',
@@ -26,6 +27,10 @@ module.exports = {
             patterns: [
                 { from: 'public', to: '' }
             ]
+        }),
+        new webpack.DefinePlugin({
+            'process.env.START_SCENE': JSON.stringify(process.env.START_SCENE || null),
+            'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'development')
         })
     ],
     devServer: {
