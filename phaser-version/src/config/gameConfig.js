@@ -29,35 +29,44 @@ export const TECLAS_POR_DEDO = {
 };
 
 export const PALABRAS_POR_NIVEL = {
-    1: {
-        palabras: [
-            'HOLA', 'CASA', 'MESA', 'SILLA', 'LIBRO',
-            'PAPEL', 'LAPIZ', 'TAZA', 'VASO', 'PLATO'
-        ]
+    1: {  // Nivel 1: Solo Dedos índices (posición base)
+        palabras: ['JU', 'FU', 'RYU','VU','TU', 'GY','MU','MY','JUR','FUR','RYU','JUR','BU','BY','HY','HV'],
+        descripcion: 'POSICIÓN BASE - SOLO DEDOS ÍNDICES (F Y J)'
     },
-    2: {
-        palabras: [
-            'ESCUELA', 'VENTANA', 'PUERTA', 'JARDIN',
-            'COCINA', 'CUARTO', 'PATIO', 'SALON'
-        ]
+    2: {  // Nivel 2: Solo Dedos medios
+        palabras: ['DEDI', 'KIKE', 'DICE','DIKE','DECE','KEKE','KIKI','IKE','CEDEC'],
+        descripcion: 'SOLO DEDOS MEDIOS (D Y K)'
     },
-    3: {
-        palabras: [
-            'COMPUTADORA', 'TELEFONO', 'TELEVISION',
-            'ESCRITORIO', 'BIBLIOTECA', 'CALENDARIO'
-        ]
+    3: {  // Nivel 3: Solo Dedos anulares
+        palabras: ['SOL', 'LOS', 'SOX','WOS','SOS','XOXO', 'KIW', 'IDE', 'ED', 'CE','CECI','KID','CID'],
+        descripcion: 'SOLO DEDOS ANULARES (S Y L)'
+    },
+    4: {  // Nivel 4: Solo Dedos meñiques
+        palabras: ['PAZ',  'PAQA','ZAP', 'PAQ','ÑAZ','QAPA','ÑAÑA','QAP'],
+        descripcion: 'SOLO DEDOS MEÑIQUES (Q Y P)'
+    },
+    5: {  // Nivel 5: Combinaciones índices y medios
+        palabras: ['JUNTE', 'VERDE', 'TIENE', 'MENTE', 'VIENE', 'DICE', 'JEFE', 'MIDE', 'RINDE', 'CINE'],
+        descripcion: 'COMBINANDO DEDOS ÍNDICES Y MEDIOS'
+    },
+    6: {  // Nivel 6: Combinaciones índices, medios y anulares
+        palabras: ['SENDERO', 'VENTILE', 'CLIENTE', 'SILENCIO', 'DESTINO', 'VECINOS', 'SEMILLA', 'DECIRLE', 'SERVIR', 'MIELES'],
+        descripcion: 'COMBINANDO DEDOS ÍNDICES, MEDIOS Y ANULARES'
+    },
+    7: {  // Nivel 7: Todos los dedos - Palabras mágicas
+        palabras: ['MAGIA', 'POCION', 'VARITA', 'HECHIZO', 'MISTICA', 'CONJURO', 'MAGICO', 'PORTAL', 'BRUJA', 'WIZARD'],
+        descripcion: 'USANDO TODOS LOS DEDOS - ¡PALABRAS MÁGICAS!'
     }
 };
 
 export const GAME_CONFIG = {
     VIDAS_INICIALES: 3,
-    VELOCIDAD_BASE: 100,
-    FRECUENCIA_SPAWN: 3000,
-    INCREMENTO_VELOCIDAD: 0.2,
-    INCREMENTO_FRECUENCIA: 0.2,
-    PALABRAS_POR_NIVEL: 10,
-    PUNTOS_POR_LETRA: 10,
-    AREA_JUEGO_HEIGHT: 420  // 600 - 180 para el teclado
+    VELOCIDAD_BASE: 100,        // Velocidad inicial de caída
+    FRECUENCIA_SPAWN: 2000,     // Tiempo entre palabras en milisegundos
+    INCREMENTO_VELOCIDAD: 1.1,  // Multiplicador de velocidad por nivel
+    INCREMENTO_FRECUENCIA: 1.5, // Multiplicador de frecuencia por nivel
+    PALABRAS_POR_NIVEL: 5,      // Cantidad de palabras para pasar de nivel
+    PUNTOS_POR_LETRA: 10        // Puntos base por cada letra correcta
 };
 
 export const SCREEN_CONFIG = {
