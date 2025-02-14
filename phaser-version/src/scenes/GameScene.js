@@ -19,12 +19,31 @@ export default class GameScene extends BaseScene {
         this.nextSpawnTime = 0;  // Nuevo: tiempo exacto para el próximo spawn
     }
 
+    init() {
+        // Reiniciar todas las variables del juego
+        this.words = [];
+        this.userText = '';
+        this.score = 0;
+        this.level = 1;
+        this.wordsCompleted = 0;
+        this.lives = GAME_CONFIG.VIDAS_INICIALES;
+        this.lastSpawnTime = 0;
+        this.speedMultiplier = 1.0;
+        this.frequencyMultiplier = 1.0;
+        this.gameOver = false;
+        this.canSpawnWords = false;
+        this.nextSpawnTime = 0;
+    }
+
     preload() {
         super.preload();
         // Cargar solo los assets específicos del juego
         this.load.image('wizard', 'assets/images/characters/wizard.png');
         this.load.image('heart', 'assets/images/ui/heart.png');
-        this.load.image('magic_effect', 'assets/images/effects/magic_effect.png');
+        this.load.spritesheet('explosion', 'assets/images/effects/explosion.png', { 
+            frameWidth: 32, 
+            frameHeight: 32 
+        });
         
         // Cargar sonidos
         this.load.audio('success', 'assets/sounds/effects/powerUp2.ogg');
@@ -35,6 +54,17 @@ export default class GameScene extends BaseScene {
 
     create() {
         super.create();  // Esto creará el fondo común
+
+        // Detener todas las músicas activas antes de iniciar el juego
+        this.game.sound.stopAll();
+
+        // Crear la animación de explosión
+        this.anims.create({
+            key: 'explode',
+            frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 5 }),
+            frameRate: 20,
+            repeat: 0
+        });
 
         // Configurar sonidos
         this.sounds = {
@@ -51,8 +81,36 @@ export default class GameScene extends BaseScene {
         this.createWizard();
         this.createUI();
 
-        // Configurar entrada de texto
-        this.input.keyboard.on('keydown', this.handleKeyInput, this);
+        // Configurar entrada de texto (solo para ENTER y letras)
+        this.input.keyboard.off('keydown'); // Solo remover el listener general
+        this.input.keyboard.on('keydown-ENTER', () => {
+            if (!this.gameOver) {
+                this.checkWord();
+            }
+        }, this);
+        this.input.keyboard.on('keydown-BACKSPACE', () => {
+            if (!this.gameOver) {
+                this.userText = this.userText.slice(0, -1);
+                this.userTextField.setText(this.userText);
+            }
+        }, this);
+        
+        // Manejar letras individualmente
+        this.input.keyboard.on('keydown', (event) => {
+            if (!this.gameOver && event.key.length === 1 && event.key.match(/[a-záéíóúñA-ZÁÉÍÓÚÑ]/i)) {
+                this.userText += event.key.toUpperCase();
+                this.userTextField.setText(this.userText);
+            }
+        }, this);
+
+        // Restaurar el handler de ESC del BaseScene
+        this.input.keyboard.on('keydown-ESC', () => {
+            // Detener la música actual si existe
+            if (this.music) this.music.stop();
+            
+            // Transición al menú usando el sistema de escenas de Phaser
+            this.scene.start('menu');
+        });
 
         // Mostrar introducción del nivel antes de comenzar
         this.showLevelIntro();
@@ -203,20 +261,6 @@ export default class GameScene extends BaseScene {
         });
     }
 
-    handleKeyInput(event) {
-        if (this.gameOver) return;
-
-        if (event.key === 'Backspace') {
-            this.userText = this.userText.slice(0, -1);
-        } else if (event.key === 'Enter') {
-            this.checkWord();
-        } else if (event.key.length === 1 && event.key.match(/[a-záéíóúñA-ZÁÉÍÓÚÑ]/i)) {
-            this.userText += event.key.toUpperCase();
-        }
-
-        this.userTextField.setText(this.userText);
-    }
-
     checkWord() {
         const word = this.words.find(w => w.text === this.userText);
         if (word) {
@@ -250,15 +294,42 @@ export default class GameScene extends BaseScene {
     }
 
     createSuccessEffect(x, y) {
-        const particles = this.add.particles(x, y, 'magic_effect', {
-            speed: { min: 100, max: 200 },
-            angle: { min: 0, max: 360 },
-            scale: { start: 0.5, end: 0 },
-            lifespan: 1000,
-            quantity: 20
+        // Crear una explosión más pequeña y brillante para el éxito
+        const successExplosion = this.add.sprite(x, y, 'explosion')
+            .setScale(1.5)
+            .setTint(0x00ff00)  // Verde para éxito
+            .setBlendMode('ADD')
+            .play('explode');
+
+        // Hacer que la explosión suba mientras se reproduce
+        this.tweens.add({
+            targets: successExplosion,
+            y: y - 50,
+            alpha: 0,
+            duration: 600,
+            ease: 'Quad.easeOut',
+            onComplete: () => successExplosion.destroy()
         });
 
-        this.time.delayedCall(1000, () => particles.destroy());
+        // Crear explosiones más pequeñas alrededor
+        for (let i = 0; i < 3; i++) {
+            const offsetX = Phaser.Math.Between(-30, 30);
+            const offsetY = Phaser.Math.Between(-30, 30);
+            const smallExplosion = this.add.sprite(x + offsetX, y + offsetY, 'explosion')
+                .setScale(0.8)
+                .setTint(0x00ff00)
+                .setBlendMode('ADD')
+                .play('explode');
+
+            this.tweens.add({
+                targets: smallExplosion,
+                y: (y + offsetY) - 30,
+                alpha: 0,
+                duration: 500,
+                ease: 'Quad.easeOut',
+                onComplete: () => smallExplosion.destroy()
+            });
+        }
     }
 
     spawnWord() {
@@ -389,7 +460,14 @@ export default class GameScene extends BaseScene {
                 this.showLevelIntro();
             } else {
                 // Si no hay más niveles, ir a la pantalla de resultados
-                this.game.changeScene(this, 'results');
+                this.registry.set('score', this.score);
+                this.registry.set('level', this.level);
+                
+                // Detener la música actual
+                if (this.music) this.music.stop();
+                
+                // Transición a la escena de resultados
+                this.scene.start('results');
             }
         }
     }
@@ -422,7 +500,15 @@ export default class GameScene extends BaseScene {
             alpha: 1,
             duration: 2000,
             onComplete: () => {
-                this.game.changeScene(this, 'results');
+                // Guardar score y level en el registro global
+                this.registry.set('score', this.score);
+                this.registry.set('level', this.level);
+                
+                // Detener la música actual
+                if (this.music) this.music.stop();
+                
+                // Transición a la escena de resultados
+                this.scene.start('results');
             }
         });
     }
@@ -455,16 +541,32 @@ export default class GameScene extends BaseScene {
     }
 
     createExplosionEffect(x, y) {
-        // Efecto de explosión más dramático
-        const particles = this.add.particles(x, y, 'magic_effect', {
-            speed: { min: 200, max: 400 },
-            angle: { min: 0, max: 360 },
-            scale: { start: 0.6, end: 0 },
-            lifespan: 800,
-            quantity: 30,
-            gravityY: 200
-        });
+        // Explosión principal grande
+        const mainExplosion = this.add.sprite(x, y, 'explosion')
+            .setScale(3)
+            .setTint(0xff6600)
+            .play('explode');
 
-        this.time.delayedCall(800, () => particles.destroy());
+        // Explosiones más pequeñas alrededor
+        for (let i = 0; i < 4; i++) {
+            const offsetX = Phaser.Math.Between(-40, 40);
+            const offsetY = Phaser.Math.Between(-20, 20);
+            const delay = Phaser.Math.Between(0, 200);
+            
+            this.time.delayedCall(delay, () => {
+                const smallExplosion = this.add.sprite(x + offsetX, y + offsetY, 'explosion')
+                    .setScale(1.5)
+                    .setTint(0xff3300)
+                    .play('explode');
+
+                smallExplosion.on('animationcomplete', () => {
+                    smallExplosion.destroy();
+                });
+            });
+        }
+
+        mainExplosion.on('animationcomplete', () => {
+            mainExplosion.destroy();
+        });
     }
 } 

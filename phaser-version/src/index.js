@@ -1,14 +1,10 @@
 import Phaser from 'phaser';
-import Game from './game/Game';
 import MenuScene from './scenes/MenuScene';
 import GameScene from './scenes/GameScene';
 import ResultsScene from './scenes/ResultsScene';
 import IntroScene from './scenes/IntroScene';
 import InstructionsScene from './scenes/InstructionsScene';
 import { SCREEN_CONFIG } from './config/gameConfig';
-
-// Crear instancia del juego primero
-window.game = new Game();
 
 // Configuración global del juego
 const config = {

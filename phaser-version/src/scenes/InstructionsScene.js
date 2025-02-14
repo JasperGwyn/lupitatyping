@@ -11,13 +11,11 @@ export default class InstructionsScene extends BaseScene {
             "USA LOS DEDOS CORRECTOS",
             "¡NO DEJES LAS PALABRAS\nTOQUEN LA LÍNEA ROJA!"
         ];
-        this.particles = [];
     }
 
     preload() {
         super.preload();
         this.load.image('wizard', 'assets/images/characters/wizard.png');
-        this.load.image('magic_effect', 'assets/images/effects/magic_effect.png');
     }
 
     create() {
@@ -44,22 +42,6 @@ export default class InstructionsScene extends BaseScene {
             repeat: -1,
             ease: 'Sine.InOut'
         });
-
-        // Crear partículas mágicas
-        for (let i = 0; i < 30; i++) {
-            const particle = this.add.image(
-                Phaser.Math.Between(0, SCREEN_CONFIG.WIDTH),
-                Phaser.Math.Between(0, SCREEN_CONFIG.HEIGHT),
-                'magic_effect'
-            ).setAlpha(Phaser.Math.FloatBetween(0.2, 0.8))
-             .setScale(Phaser.Math.FloatBetween(0.1, 0.3));
-            
-            this.particles.push({
-                sprite: particle,
-                speed: Phaser.Math.FloatBetween(0.5, 2.0),
-                angle: Phaser.Math.FloatBetween(0, 360)
-            });
-        }
 
         // Panel semi-transparente para las instrucciones
         const panelWidth = SCREEN_CONFIG.WIDTH * 0.8;
@@ -120,21 +102,11 @@ export default class InstructionsScene extends BaseScene {
 
         // Evento de teclado para ESPACIO
         this.input.keyboard.on('keydown-SPACE', () => {
-            this.game.changeScene(this, 'game');
-        });
-    }
-
-    update() {
-        // Actualizar partículas
-        this.particles.forEach(p => {
-            p.angle = (p.angle + p.speed) % 360;
-            const centerX = this.wizard.x;
-            const centerY = this.wizard.y;
-            const radius = 50 + Math.sin(p.angle * Math.PI / 180) * 20;
+            // Detener la música actual si existe
+            if (this.music) this.music.stop();
             
-            p.sprite.x = centerX + Math.cos(p.angle * Math.PI / 180) * radius;
-            p.sprite.y = centerY + Math.sin(p.angle * Math.PI / 180) * radius;
-            p.sprite.alpha = 0.5 + Math.sin(this.time.now * 0.001 + p.angle) * 0.5;
+            // Transición a la escena del juego
+            this.scene.start('game');
         });
     }
 } 

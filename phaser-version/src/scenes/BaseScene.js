@@ -3,11 +3,6 @@ export default class BaseScene extends Phaser.Scene {
         super(key);
     }
 
-    init() {
-        // Asegurarnos de que tenemos acceso al juego
-        this.game = window.game;
-    }
-
     preload() {
         if (!this.textures.exists('castle')) {
             // Cargar todos los assets necesarios para el fondo
@@ -135,10 +130,31 @@ export default class BaseScene extends Phaser.Scene {
         }
     }
 
+    shutdown() {
+        // Limpiar eventos de update del fondo
+        this.events.off('update', this.updateBackground, this);
+        
+        // Limpiar eventos de teclado
+        this.input.keyboard.removeAllListeners();
+        
+        // Limpiar tweens
+        this.tweens.killAll();
+        
+        // Limpiar nubes
+        if (this.clouds) {
+            this.clouds.forEach(cloud => cloud.destroy());
+            this.clouds = [];
+        }
+    }
+
     handleKeyDown(event) {
         // Manejar tecla ESC para volver al menú
         if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.ESC) {
-            this.game.changeScene(this, 'menu');
+            // Detener la música actual si existe
+            if (this.music) this.music.stop();
+            
+            // Transición al menú usando el sistema de escenas de Phaser
+            this.scene.start('menu');
         }
     }
 

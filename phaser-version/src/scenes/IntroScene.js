@@ -111,13 +111,29 @@ export default class IntroScene extends BaseScene {
         // Mostrar textos inmediatamente
         this.currentText.setAlpha(1);
         this.currentTextMain.setAlpha(1);
+        
+        // Mostrar y animar el texto de "Presiona ESPACIO"
+        this.pressSpaceText.setAlpha(1);
+        this.tweens.add({
+            targets: this.pressSpaceText,
+            alpha: 0,
+            duration: 500,
+            yoyo: true,
+            repeat: -1
+        });
+        
         this.animationState = "WAIT";
     }
 
     nextText() {
+        // Detener la animación del texto "Presiona ESPACIO"
+        this.tweens.killTweensOf(this.pressSpaceText);
+        
         // Quitamos el texto inmediatamente
         this.currentText.setAlpha(0);
         this.currentTextMain.setAlpha(0);
+        this.pressSpaceText.setAlpha(0);
+        
         this.currentPage++;
         this.showCurrentText();
     }
